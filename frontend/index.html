@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatting App using FastAPI</title>
+</head>
+<body>
+<h1>Chatting App using FastAPI and Websockets</h1>
+<input type="text" id="inputText" placeholder="Type Something...">
+<button id="submitButton">Submit</button>
+<div id="container"></div>
+<script>
+function getRandomInt(min,max){
+    return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+const id=getRandomInt(1,1000);
+
+const socket=new WebSocket('ws://127.0.0.1:8000/ws/'+id)
+
+function showMessage(message){
+    const messageContainer=document.getElementById('container')
+    const messageElement=document.createElement('div');
+    messageElement.textContent=message;
+    messageContainer.appendChild(messageElement);   
+}
+
+socket.addEventListener('open',(event)=>{
+ showMessage('connected to server.');
+});
+socket.onmessage=(event)=>{
+    showMessage(event.data)
+}
+socket.addEventListener('close',(event)=>{
+ showMessage('Connection closed.');
+}
+);
+const inputText=document.getElementById("inputText");
+const submitButton = document.getElementById("submitButton");
+
+        submitButton.addEventListener("click", function () {
+            const inputValue = inputText.value;
+            socket.send(inputValue)
+        });
+</script>
+</body>
+</html>
